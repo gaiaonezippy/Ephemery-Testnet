@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ephemery Testnet Faucet</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/gaiaonezippy/Ephemery-Testnet/refs/heads/main/ethereum-testnet-.ico" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(145deg, rgba(9, 11, 16, 1), rgba(33, 37, 41, 1));
+            min-height: 100vh;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4">
+    <div class="container max-w-md glass p-6 text-white text-center">
+        <h1 class="text-2xl md:text-3xl font-bold mb-4">Ephemery Testnet Faucet</h1>
+        <form id="faucet-form" class="space-y-4">
+            <input 
+                type="text" 
+                id="address" 
+                placeholder="Enter your wallet address" 
+                class="w-full px-4 py-2 text-gray-800 rounded-lg focus:outline-none"
+                required 
+            />
+            <button 
+                type="submit" 
+                class="w-full bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-white font-medium">
+                Request 1 ETH
+            </button>
+        </form>
+        <p id="message" class="mt-4 text-gray-300"></p>
+    </div>
+    <script>
+        const apiUrl = "http://localhost:3000/faucet";
+
+        document.getElementById("faucet-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const address = document.getElementById("address").value.trim();
+            const messageElement = document.getElementById("message");
+
+            messageElement.innerText = "Processing...";
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ address }),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    messageElement.innerHTML = `Transaction sent! <a href="https://explorer.ephemery.dev/tx/${data.txHash}" class="text-blue-400 underline" target="_blank">View on Explorer</a>`;
+                } else {
+                    const errorText = await response.text();
+                    messageElement.innerText = errorText;
+                }
+            } catch (error) {
+                messageElement.innerText = "Error connecting to faucet. Please try again later.";
+            }
+        });
+    </script>
+</body>
+</html>
