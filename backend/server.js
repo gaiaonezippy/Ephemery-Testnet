@@ -13,7 +13,7 @@ app.use(express.json());
 // Load environment variables
 const privateKey = process.env.PRIVATE_KEY;
 const rpcUrl = process.env.RPC_URL;
-const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+const provider = new ethers.JsonRpcProvider(rpcUrl);
 const wallet = new ethers.Wallet(privateKey, provider);
 
 // In-memory claim history (use a database in production)
@@ -24,7 +24,7 @@ const claimCooldown = 3600 * 1000; // 1 hour in milliseconds
 app.post("/faucet", async (req, res) => {
     const { address } = req.body;
 
-    if (!ethers.utils.isAddress(address)) {
+    if (!ethers.isAddress(address)) {
         return res.status(400).send("Invalid wallet address.");
     }
 
@@ -40,7 +40,7 @@ app.post("/faucet", async (req, res) => {
         // Send transaction
         const tx = await wallet.sendTransaction({
             to: address,
-            value: ethers.utils.parseEther("1.0"), // 1 ETH
+            value: ethers.parseEther("1.0"), // 1 ETH
         });
 
         // Update claim history
